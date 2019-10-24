@@ -309,14 +309,36 @@ Dvojité uvozovky "SomeString with $someVariableName" je interpolovaný string.
 	$dString = "Implicitní určení stringu" # PS kontroluje, zda mezi "" není nějaký název proměnné.
 }
 
+# Použití roury i tam, kde by .NET programátor nepoužil
+{
+	$path = "$env:APPDATA\SomeFolder"
+
+	if(Test-Path -Path $path) {<# alá .NET programátor#>}
+	if($path | Test-Path) {<# alá PS programátor #>}
+}
 
 # Konstrukce smyček for, foreach
 {
-	# Většina smyček se v PS dá nahradit rourou na jeden řádek.
-	# Jediné, kde smyčky dávají smysl, je práce s členskými proměnnými.
 	$test = 1..10
 	$test
+	foreach ($number in $test) {
+		$number * 10
+	}
+	# Většina smyček se v PS dá nahradit rourou na jeden řádek.
 	$test = $test | ForEach-Object { $_ * 10 } # 1 * 10, 2 * 10 ...
+
+	# Hezké, ale tak nějak C# než PS. 
+	$softwareCollection = @('firefox', 'MPC-HC', 'VLC', 'Dropbox')
+    foreach ($software in $softwareCollection)
+    {
+        choco upgrade $software -y
+    }
+
+	# Stejně hezké a čistý PS.
+    @('firefox', 'MPC-HC', 'VLC', 'Dropbox') |
+    ForEach-Object {choco upgrade $software -y}
+
+	# Jediné, kde smyčky dávají smysl, je práce s členskými proměnnými.
 	$test
 	$test = @{Key1 = 1; Key2 = 2 }
 	$test
@@ -326,11 +348,11 @@ Dvojité uvozovky "SomeString with $someVariableName" je interpolovaný string.
 	$test
 	$test = $test | ForEach-Object { $_.Value = 10 }
 	$test # Copak se nám tady stalo?
+}
 
-	# Kontrola proměnné na null
-	if ($test) {
+# Kontrola proměnné na null
+if ($test) {
 		
-	}
 }
 
 # Zalomení konce řádků
@@ -690,8 +712,9 @@ Register-PackageSource -Location https://www.nuget.org/api/v2 -name nuget.org -T
 # Kdy PowerShell použít jako .NET programátor?
 ####################################################
 <#
-- PS má totiž jednu velkou výhodu: výkoný i zdrojový kód
-- Primárně nahrazení konzolovky
+- PS má totiž jednu velkou výhodu: výkonný = zdrojový kód. Mohu se rovnou podívat, co se děje uvnitř.
+- Primárně nahrazení konzolovky, kde každá změna => rekompilace.
+- Není potřeba/možnost pro speciální IDE pro debuging.
 - PS skript zvládne hravě schopnosti konzolových aplikací. Dokud neexistoval DragonFruit, byl to i lepší způsob díky lepší validaci parametrů. (https://www.hanselman.com/blog/DragonFruitAndSystemCommandLineIsANewWayToThinkAboutNETConsoleApps.aspx)
 #>
 ####################################################
@@ -703,6 +726,8 @@ Register-PackageSource -Location https://www.nuget.org/api/v2 -name nuget.org -T
 <#
 - Složitější GUI
 - Potřebuji rozsáhleji pracovat s třídami.
+- Když potřebuji dědičnost a protected.
+- Nerozdýchám absenci rozhraní.
 #>
 ####################################################
 
