@@ -69,7 +69,7 @@ To jsme si řekli A, teď si ještě říci B...
 
 
 ####################################################
-# PowerShell vs. PowerShell Core
+# Windows PowerShell vs. PowerShell Core
 ####################################################
 <# Co je ovšem potřeba dodat...
 v1.0.0.x | Listopad 2006 	| Windows PowerShell 	| .NET Framework
@@ -77,10 +77,10 @@ v2.0.0.x | Říjen 	2009 	| Windows PowerShell 	| .NET Framework 3.5 (asi ???)
 v3.0.0.x | Září 	2012 	| Windows PowerShell 	| .NET Framework 4.0
 v4.0.0.x | Říjen 	2013 	| Windows PowerShell 	| .NET Framework 4.5
 v5.0.0.x | Únor 	2016 	| Windows PowerShell 	| .NET Framework 4.5
-v5.1.0.x | Leden 	2016 	| Windows PowerShell 	| .NET Framework 4.5
+v5.1.0.x | Leden 	2017 	| Windows PowerShell 	| .NET Framework 4.5
 v6.0.0   | Leden 	2018 	| PowerShell Core		| .NET Core v2.0.9
 v6.1.0   | Září 	2018 	| PowerShell Core		| .NET Core v2.1.13
-v6.2.0   | Březen 	2018 	| PowerShell Core		| .NET Core v2.1.13
+v6.2.0   | Březen 	2019 	| PowerShell Core		| .NET Core v2.1.13
 v7.0.0 P4| Září 	2019 	| PowerShell Core		| .NET Core 3.0
 #>
 Start-Process -FilePath 'https://github.com/KUTlime/PowerShell-pohledem-dotNET-programatora/blob/master/Images/PowerShell%20Windows%20DLL%20dependency.png'
@@ -144,7 +144,7 @@ Start-Process -FilePath 'https://marketplace.visualstudio.com/items/ms-vscode.Po
 <# Klíčové koncepty:
 
 Asi si někdo řekl:
-"Pojďme vzít to, co funguje a udělejme to pořádně."
+"Pojďme vzít to, co funguje, ale udělejme to pořádně."
 "S dokumentací..."
 "...kterou navíc budeme aktualizovat, když něco změníme."
 "In your face, Linux!"
@@ -241,13 +241,11 @@ PS Provider zprostředkovává určitou doménu.
 	$podsložky = Get-ChildItem -Path $reg
 
 	# Test, zda podsložky obsahují podsložku s přesným názvem Accessibility
-	if (Test-Path "$reg\Accessibility")
- {
+	if (Test-Path "$reg\Accessibility") {
 		Write-Verbose -Message 'Accessibility je tam.'
 	}
 	# Alternativa
-	if ($podsložky[0..($podsložky.Count - 1)].Name -like 'Accessibility')
- {
+	if ($podsložky[0..($podsložky.Count - 1)].Name -like 'Accessibility') {
 		Write-Verbose -Message 'Accessibility je tam.'
 	}
 
@@ -279,10 +277,11 @@ PS Provider zprostředkovává určitou doménu.
 	Write-Information "Zpráva" # Zapíše se informační hlášení do konzole
 	Write-Verbose "Zpráva" # Zapíše se informační hlášení do konzole, dostupné pouze pro příznak -Verbose
 	Write-Debug  "Zpráva" # Zapíše se debug hlášení do konzole, dostupné pouze pro příznak debug.
-
+	# Write-Debug způsobuje confirm
+	
 	# Každý proud má své nastavení chování
 	$VerbosePreference = [System.Management.Automation.ActionPreference]::SilentlyContinue    # Použití enumu, který zajistí ochranu před typo chybou.
-	$InformationPreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
+	$InformationPreference = [System.Management.Automation.ActionPreference]::Continue
 	$DebugPreference = "SilentlyContinue"                                                     # Použítí běžného stringu, který si PS sám převede.
 	$ProgressPreference = [System.Management.Automation.ActionPreference]::Continue
 	$WarningPreference = "Continue"
@@ -299,7 +298,7 @@ PS Provider zprostředkovává určitou doménu.
 PS pro stringy používá 'SomeString' a "SomeString".
 
 Jednoduché uvozovky 'SomeString' je string literál => konstantní string.
-Dvojité uvozovky "SomeString" je interpolovaný string.
+Dvojité uvozovky "SomeString with $someVariableName" je interpolovaný string.
 #>
 {
 	$aString = "Some string"
@@ -317,14 +316,21 @@ Dvojité uvozovky "SomeString" je interpolovaný string.
 	# Jediné, kde smyčky dávají smysl, je práce s členskými proměnnými.
 	$test = 1..10
 	$test
-	$test = $test | ForEach-Object { $_ * 10 }
+	$test = $test | ForEach-Object { $_ * 10 } # 1 * 10, 2 * 10 ...
 	$test
 	$test = @{Key1 = 1; Key2 = 2 }
 	$test
 	$test = $test | ForEach-Object { $_.Value * 10 }
-	$est
+	$test | ForEach-Object { $_ | Get-Member }
+	$test | Get-Member
+	$test
 	$test = $test | ForEach-Object { $_.Value = 10 }
 	$test # Copak se nám tady stalo?
+
+	# Kontrola proměnné na null
+	if ($test) {
+		
+	}
 }
 
 # Zalomení konce řádků
@@ -335,8 +341,8 @@ Dvojité uvozovky "SomeString" je interpolovaný string.
 	# viz další výklad, můžeme zalomit řádek Enterem.
 	# V tu chvíli PS interpretuje příkaz jako jeden.
 	Get-Service |
-		Where-Object -Property Status -eq 'Running' |
-		Format-Table Name, DisplayName -AutoSize
+	 Where-Object -Property Status -eq 'Running' |
+	 Format-Table Name, DisplayName -AutoSize
 
 	# Pro zalomení jednoho řádku na dva příkazy lze
 	# použít středník (;) mezi příkazy. V tu chvíli je
@@ -360,38 +366,35 @@ Dvojité uvozovky "SomeString" je interpolovaný string.
 	Start-Process -FilePath "https://docs.microsoft.com/en-us/powershell/developer/cmdlet/approved-verbs-for-windows-powershell-commands"
 
 	# Sekci parametrů i samotné parametry můžeme rozsáhle dekorovat atributy, viz příklady.
-	function Verb-Noun
- {
+	function Verb-Noun {
 		[CmdletBinding()]
 		param (
 			# Obsáhlý popis parameterů
 		)
 
-		begin
-		{
+		begin {
 
 		}
 
-		process
-		{
+		process {
 
 		}
 
-		end
-		{
+		end {
 
 		}
 	}
 }
+# Validate paramterů na datový typ se provádí jako první
+# PS provede převedení vstupní hodnoty (např. string) na datový typ natvrdo a teprve potom kontroluje dle atributů.
+# Problém přdevším v národnostním formátování, např. desetinný oddělovač.
 
 # Konstrukce tříd
 {
 	# PS 5.x a vyšší.
-	class Foo
-	{
+	class Foo {
 		# Konstruktory
-		Foo([String]$alias, [Int32]$hitPoints)
-		{
+		Foo([String]$alias, [Int32]$hitPoints) {
 			#$Alias = $alias # Tohle neklapne, this je povinný.
 			$this.Alias = $alias
 			$this.HitPoints = $hitPoints
@@ -416,12 +419,10 @@ Dvojité uvozovky "SomeString" je interpolovaný string.
 	# https://stackoverflow.com/questions/31051103/how-to-export-a-class-in-powershell-v5-module
 
 	# Chcete vlastní gettery a settery? No nebude se vám to asi líbit...
-	class FooBar
-	{
+	class FooBar {
 		hidden [string]$_prop1
 
-		FooBar()
-		{
+		FooBar() {
 			$this | Add-Member -Name Prop1 -MemberType ScriptProperty -Value {
 				# This is the getter
 				return $this._prop1
@@ -453,7 +454,6 @@ Dvojité uvozovky "SomeString" je interpolovaný string.
 	$list = New-Object 'System.Collections.Generic.List`1[Int32]' # Není úplně typově bezpečné.
 	$list = New-Object -TypeName ([System.Collections.Generic.List`1[Int32]]) # Všimněte si triku se (), typově bezpečnější.
 	# `1 znamená jeden typ, stejné jako List<Int32>, `2 => List<Int32,Int32>, v PS takto:
-	$list = New-Object -TypeName ([System.Collections.Generic.List`2[[Int32], [Int32]]]) # Všimněte si triku se (), typově bezpečnější.
 
 	# Obecně lze často vidět [typo]vě nebepečné použití stringu u definice názvu typu, oboru názvů nebo hodnoty enumu.
 	Get-ChildItem -Path C:\Temp -ErrorAction 'SilentlyContinue' 	# Takto to napíše jenom hovado.
@@ -492,8 +492,9 @@ Dvojité uvozovky "SomeString" je interpolovaný string.
 
 	1 -eq 2 	# equal
 	1 -gt 2  	# greater than
-	1 -ge 2  	# greater than
+	1 -ge 2  	# greater equal
 	-not 1		# negace alá PS
+	
 
 	# V PS jsou smotány všechny operátory dohromady, do textové podoby: pomlčka (technicky vzato je to spojovník) + textová podoba toho, co chci.
 
@@ -557,8 +558,7 @@ Dvojité uvozovky "SomeString" je interpolovaný string.
 
 	$result = $form.ShowDialog() # Vykreslení na obrazovku
 	# Kontorla, zda vrácený výsledek z formy je stisk tlačítka OK
-	if ($result -eq [System.Windows.Forms.DialogResult]::OK)
-	{
+	if ($result -eq [System.Windows.Forms.DialogResult]::OK) {
 		$date = $calendar.SelectionStart
 		Write-Host "Date selected: $($date.ToShortDateString())"
 	}
@@ -573,8 +573,7 @@ Start-Process -FilePath "https://www.gngrninja.com/script-ninja/2016/12/23/power
 # navrhneme GUI a poté zkopírujeme XAML kód z designéru
 # do PS. Zde z něj vyrobíme XML a použijeme jako formulář.
 {
-	function Invoke-GUI
- {
+	function Invoke-GUI {
 		#Begin function Invoke-GUI
 		[cmdletbinding()]
 		Param()
@@ -609,15 +608,13 @@ Start-Process -FilePath "https://www.gngrninja.com/script-ninja/2016/12/23/power
 
 		#Read XAML
 		$reader = (New-Object System.Xml.XmlNodeReader $xaml)
-		try
-		{
+		try {
 
 			$Form = [Windows.Markup.XamlReader]::Load( $reader )
 
 		}
 
-		catch
-		{
+		catch {
 
 			Write-Error "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 
@@ -642,20 +639,6 @@ Start-Process -FilePath "https://www.gngrninja.com/script-ninja/2016/12/23/power
 ####################################################
 
 
-
-
-
-
-
-
-
-
-# Validate paramterů na datový typ se provádí jako první
-# PS provede převedení vstupní hodnoty (např. string) na datový typ natvrdo a teprve potom kontroluje dle atributů.
-# Problém přdevším v národnostním formátování, např. desetinný oddělovač.
-
-# Write-Debug způsobuje confirm
-
 ####################################################
 # Použití nuget balíčků z nuget.org
 ####################################################
@@ -679,8 +662,7 @@ Register-PackageSource -Location https://www.nuget.org/api/v2 -name nuget.org -T
 		$process.StartInfo.UseShellExecute = $false
 		$process.StartInfo.RedirectStandardOutput = $true
 		$process.StartInfo.RedirectStandardInput = $true
-		if ( $process.Start() )
-		{
+		if ( $process.Start() ) {
 			# input
 			$process.StandardInput.WriteLine("1");
 			$process.StandardInput.WriteLine("2");
@@ -689,14 +671,11 @@ Register-PackageSource -Location https://www.nuget.org/api/v2 -name nuget.org -T
 			$process.StandardInput.WriteLine();
 			# output check
 			$output = $process.StandardOutput.ReadToEnd()
-			if ( $output )
-			{
-				if ( $output.Contains("sum 6") )
-				{
+			if ( $output ) {
+				if ( $output.Contains("sum 6") ) {
 					Write-Output "pass"
 				}
-				else
-				{
+				else {
 					Write-Error $output
 				}
 			}
