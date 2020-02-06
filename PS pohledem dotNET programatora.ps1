@@ -1,7 +1,8 @@
-﻿# Name: WUG Přednáška Zlín
+﻿# Name: WUG Přednáška Zlín/Ostrava
 # author: Radek Zahradník (radek.zahradnik@msn.com)
 # Date: 2019-10-17
-# Version: 1.0
+# Version: 1.1
+# Updated: v1.1 (2020-02-06)
 # Purpose: This script is replacement for PowerPoint presentation
 # which would be sooooooo boring. ;-)
 ##########################################################################
@@ -22,7 +23,8 @@ Start-Process -FilePath 'www.radekzahradnik.cz/bio'
 - Kompletní automatizace domácí agendy: Podzim 2015
 - Automatizace pracovní agendy: Jaro 2016
 - První školení: Červen 2017
-- Říjen 2019: 1x školení s 1xx lidmi, základní, pokročilé a nejlepší v ČR
+- Říjen 2019: 1x školení s 1xx lidmi, základní a pokročilé.
+- Asi nejlepší základní školení v ČR (minimálně pro .NET programátory)
 #>
 
 <# Let's have a threesome!
@@ -30,6 +32,7 @@ Start-Process -FilePath 'www.radekzahradnik.cz/bio'
 # 2016 GA Drilling: Virtualizace a správa výpočetního clusteru.
 # 2017-2018 GINA: Pre/post build akce, automatizace úkolů
 # 2018 Medirecord: Úkoly, související s hlavní aplikací, např. správa RESX souborů.
+# 2019-doteď PurpleTechnology: Azure, deployment služeb.
 #>
 ####################################################
 
@@ -72,16 +75,17 @@ To jsme si řekli A, teď si ještě říci B...
 # Windows PowerShell vs. PowerShell Core
 ####################################################
 <# Co je ovšem potřeba dodat...
-v1.0.0.x | Listopad 2006 	| Windows PowerShell 	| .NET Framework
-v2.0.0.x | Říjen 	2009 	| Windows PowerShell 	| .NET Framework 3.5 (asi ???)
-v3.0.0.x | Září 	2012 	| Windows PowerShell 	| .NET Framework 4.0
-v4.0.0.x | Říjen 	2013 	| Windows PowerShell 	| .NET Framework 4.5
-v5.0.0.x | Únor 	2016 	| Windows PowerShell 	| .NET Framework 4.5
-v5.1.0.x | Leden 	2017 	| Windows PowerShell 	| .NET Framework 4.5
-v6.0.0   | Leden 	2018 	| PowerShell Core		| .NET Core v2.0.9
-v6.1.0   | Září 	2018 	| PowerShell Core		| .NET Core v2.1.13
-v6.2.0   | Březen 	2019 	| PowerShell Core		| .NET Core v2.1.13
-v7.0.0 P4| Září 	2019 	| PowerShell Core		| .NET Core 3.0
+v1.0.0.x 	| Listopad 	2006 	| Windows PowerShell 	| .NET Framework
+v2.0.0.x 	| Říjen 	2009 	| Windows PowerShell 	| .NET Framework 3.5 (asi ???)
+v3.0.0.x 	| Září 		2012 	| Windows PowerShell 	| .NET Framework 4.0
+v4.0.0.x 	| Říjen 	2013 	| Windows PowerShell 	| .NET Framework 4.5
+v5.0.0.x 	| Únor 		2016 	| Windows PowerShell 	| .NET Framework 4.5
+v5.1.0.x 	| Leden 	2017 	| Windows PowerShell 	| .NET Framework 4.5
+v6.0.0   	| Leden 	2018 	| PowerShell Core		| .NET Core v2.0.9
+v6.1.0   	| Září 		2018 	| PowerShell Core		| .NET Core v2.1.13
+v6.2.0   	| Březen 	2019 	| PowerShell Core		| .NET Core v2.1.13
+v7.0.0 P4	| Září 		2019 	| PowerShell Core		| .NET Core 3.0
+v7.0.0 RC2	| Leden 	2020 	| PowerShell Core		| .NET Core 3.0
 #>
 Start-Process -FilePath 'https://github.com/KUTlime/PowerShell-pohledem-dotNET-programatora/blob/master/Images/PowerShell%20Windows%20DLL%20dependency.png'
 Start-Process -FilePath 'https://github.com/KUTlime/PowerShell-pohledem-dotNET-programatora/blob/master/Images/PowerShell%20Core.png'
@@ -130,9 +134,13 @@ Get-Module -ListAvailable
 - ISE + ISESteroids
 #>
 Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-choco upgrade vscode -y
-code --install-extension shan.code-settings-sync
-code
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+Write-Host "Installing VS Code..."
+Start-Process powershell { choco upgrade vscode -y } -Wait
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+Start-Process powershell { code --install-extension shan.code-settings-sync } -Wait
+Start-Process powershell { code }
+Write-Host "VS Code installed."
 Write-Host 'Now, sync settings from cloud.'
 Start-Process -FilePath 'https://marketplace.visualstudio.com/items/ms-vscode.PowerShell/changelog'
 ####################################################
@@ -241,11 +249,13 @@ PS Provider zprostředkovává určitou doménu.
 	$podsložky = Get-ChildItem -Path $reg
 
 	# Test, zda podsložky obsahují podsložku s přesným názvem Accessibility
-	if (Test-Path "$reg\Accessibility") {
+	if (Test-Path "$reg\Accessibility")
+ {
 		Write-Verbose -Message 'Accessibility je tam.'
 	}
 	# Alternativa
-	if ($podsložky[0..($podsložky.Count - 1)].Name -like 'Accessibility') {
+	if ($podsložky[0..($podsložky.Count - 1)].Name -like 'Accessibility')
+ {
 		Write-Verbose -Message 'Accessibility je tam.'
 	}
 
@@ -278,7 +288,7 @@ PS Provider zprostředkovává určitou doménu.
 	Write-Verbose "Zpráva" # Zapíše se informační hlášení do konzole, dostupné pouze pro příznak -Verbose
 	Write-Debug  "Zpráva" # Zapíše se debug hlášení do konzole, dostupné pouze pro příznak debug.
 	# Write-Debug způsobuje confirm
-	
+
 	# Každý proud má své nastavení chování
 	$VerbosePreference = [System.Management.Automation.ActionPreference]::SilentlyContinue    # Použití enumu, který zajistí ochranu před typo chybou.
 	$InformationPreference = [System.Management.Automation.ActionPreference]::Continue
@@ -313,46 +323,56 @@ Dvojité uvozovky "SomeString with $someVariableName" je interpolovaný string.
 {
 	$path = "$env:APPDATA\SomeFolder"
 
-	if(Test-Path -Path $path) {<# alá .NET programátor#>}
-	if($path | Test-Path) {<# alá PS programátor #>}
+	if (Test-Path -Path $path)
+ {
+		<# alá .NET programátor#>
+ }
+	if ($path | Test-Path)
+ {
+		<# alá PS programátor #>
+ }
 }
 
 # Konstrukce smyček for, foreach
 {
 	$test = 1..10
 	$test
-	foreach ($number in $test) {
+	foreach ($number in $test)
+ {
 		$number * 10
 	}
 	# Většina smyček se v PS dá nahradit rourou na jeden řádek.
 	$test = $test | ForEach-Object { $_ * 10 } # 1 * 10, 2 * 10 ...
 
-	# Hezké, ale tak nějak C# než PS. 
+	# Hezké, ale tak nějak C# než PS.
 	$softwareCollection = @('firefox', 'MPC-HC', 'VLC', 'Dropbox')
-    foreach ($software in $softwareCollection)
-    {
-        choco upgrade $software -y
-    }
+	foreach ($software in $softwareCollection)
+ {
+		choco upgrade $software -y
+	}
 
 	# Stejně hezké a čistý PS.
-    @('firefox', 'MPC-HC', 'VLC', 'Dropbox') |
-    ForEach-Object {choco upgrade $software -y}
+	@('firefox', 'MPC-HC', 'VLC', 'Dropbox') |
+	ForEach-Object { choco upgrade $software -y }
 
 	# Jediné, kde smyčky dávají smysl, je práce s členskými proměnnými.
+	foreach ($process in Get-Process)
+ {
+		$process.Company #... nějaké složité operace s členskými proměnnými.
+	}
+
+
+	# Pozor na některé kolekce
 	$test
 	$test = @{Key1 = 1; Key2 = 2 }
 	$test
-	$test = $test | ForEach-Object { $_.Value * 10 }
-	$test | ForEach-Object { $_ | Get-Member }
-	$test | Get-Member
-	$test
-	$test = $test | ForEach-Object { $_.Value = 10 }
-	$test # Copak se nám tady stalo?
+	$test = $test | ForEach-Object { $_.Value * 10 } <# Násobíme NULL desítkou, hashtable prochází jako celek. #>
 }
 
 # Kontrola proměnné na null
-if ($test) {
-		
+if ($test)
+{
+
 }
 
 # Zalomení konce řádků
@@ -363,8 +383,8 @@ if ($test) {
 	# viz další výklad, můžeme zalomit řádek Enterem.
 	# V tu chvíli PS interpretuje příkaz jako jeden.
 	Get-Service |
-	 Where-Object -Property Status -eq 'Running' |
-	 Format-Table Name, DisplayName -AutoSize
+	Where-Object -Property Status -eq 'Running' |
+	Format-Table Name, DisplayName -AutoSize
 
 	# Pro zalomení jednoho řádku na dva příkazy lze
 	# použít středník (;) mezi příkazy. V tu chvíli je
@@ -388,21 +408,25 @@ if ($test) {
 	Start-Process -FilePath "https://docs.microsoft.com/en-us/powershell/developer/cmdlet/approved-verbs-for-windows-powershell-commands"
 
 	# Sekci parametrů i samotné parametry můžeme rozsáhle dekorovat atributy, viz příklady.
-	function Verb-Noun {
+	function Verb-Noun
+ {
 		[CmdletBinding()]
 		param (
 			# Obsáhlý popis parameterů
 		)
 
-		begin {
+		begin
+		{
 
 		}
 
-		process {
+		process
+		{
 
 		}
 
-		end {
+		end
+		{
 
 		}
 	}
@@ -414,9 +438,11 @@ if ($test) {
 # Konstrukce tříd
 {
 	# PS 5.x a vyšší.
-	class Foo {
+	class Foo
+ {
 		# Konstruktory
-		Foo([String]$alias, [Int32]$hitPoints) {
+		Foo([String]$alias, [Int32]$hitPoints)
+		{
 			#$Alias = $alias # Tohle neklapne, this je povinný.
 			$this.Alias = $alias
 			$this.HitPoints = $hitPoints
@@ -424,7 +450,6 @@ if ($test) {
 		# Na nějakou pěknou pomoc ze strany IDE při inicializaci vlastností můžeme zapomenout.
 		# Třídy v module jsou obecně spíše problém, protože nejsou exportovány ven, musí se jim dělat ruční dokumentace.
 		# To už je jednodušší použít PS SDK a napsat to C#.
-
 
 		# Veřejné vlastnosti
 		[String] $Alias
@@ -441,17 +466,22 @@ if ($test) {
 	# https://stackoverflow.com/questions/31051103/how-to-export-a-class-in-powershell-v5-module
 
 	# Chcete vlastní gettery a settery? No nebude se vám to asi líbit...
-	class FooBar {
+	class FooBar
+ {
 		hidden [string]$_prop1
 
-		FooBar() {
+		FooBar()
+		{
 			$this | Add-Member -Name Prop1 -MemberType ScriptProperty -Value {
 				# This is the getter
 				return $this._prop1
 			} -SecondValue {
 				param($value)
 				# This is the setter
-				If ($value -eq 'foo') { $value = 'bar' }
+				If ($value -eq 'foo')
+				{
+					$value = 'bar'
+    }
 				$this._prop1 = $value
 			}
 		}
@@ -516,13 +546,27 @@ if ($test) {
 	1 -gt 2  	# greater than
 	1 -ge 2  	# greater equal
 	-not 1		# negace alá PS
-	
+
 
 	# V PS jsou smotány všechny operátory dohromady, do textové podoby: pomlčka (technicky vzato je to spojovník) + textová podoba toho, co chci.
 
 	# Ternární operátor lze realizovat takto:
-	$result = If ($condition) { "true" } Else { "false" }
-	write-host  $(If ($condition) { "true" } Else { "false" })
+	$result = If ($condition)
+ {
+		"true"
+ }
+ Else
+ {
+		"false"
+ }
+	write-host  $(If ($condition)
+		{
+			"true"
+		}
+		Else
+		{
+			"false"
+		})
 }
 
 # Konstrukce GUI skrze Winforms
@@ -580,7 +624,8 @@ if ($test) {
 
 	$result = $form.ShowDialog() # Vykreslení na obrazovku
 	# Kontorla, zda vrácený výsledek z formy je stisk tlačítka OK
-	if ($result -eq [System.Windows.Forms.DialogResult]::OK) {
+	if ($result -eq [System.Windows.Forms.DialogResult]::OK)
+ {
 		$date = $calendar.SelectionStart
 		Write-Host "Date selected: $($date.ToShortDateString())"
 	}
@@ -595,7 +640,8 @@ Start-Process -FilePath "https://www.gngrninja.com/script-ninja/2016/12/23/power
 # navrhneme GUI a poté zkopírujeme XAML kód z designéru
 # do PS. Zde z něj vyrobíme XML a použijeme jako formulář.
 {
-	function Invoke-GUI {
+	function Invoke-GUI
+ {
 		#Begin function Invoke-GUI
 		[cmdletbinding()]
 		Param()
@@ -630,13 +676,15 @@ Start-Process -FilePath "https://www.gngrninja.com/script-ninja/2016/12/23/power
 
 		#Read XAML
 		$reader = (New-Object System.Xml.XmlNodeReader $xaml)
-		try {
+		try
+		{
 
 			$Form = [Windows.Markup.XamlReader]::Load( $reader )
 
 		}
 
-		catch {
+		catch
+		{
 
 			Write-Error "Unable to load Windows.Markup.XamlReader. Double-check syntax and ensure .net is installed."
 
@@ -684,7 +732,8 @@ Register-PackageSource -Location https://www.nuget.org/api/v2 -name nuget.org -T
 		$process.StartInfo.UseShellExecute = $false
 		$process.StartInfo.RedirectStandardOutput = $true
 		$process.StartInfo.RedirectStandardInput = $true
-		if ( $process.Start() ) {
+		if ( $process.Start() )
+		{
 			# input
 			$process.StandardInput.WriteLine("1");
 			$process.StandardInput.WriteLine("2");
@@ -693,16 +742,38 @@ Register-PackageSource -Location https://www.nuget.org/api/v2 -name nuget.org -T
 			$process.StandardInput.WriteLine();
 			# output check
 			$output = $process.StandardOutput.ReadToEnd()
-			if ( $output ) {
-				if ( $output.Contains("sum 6") ) {
+			if ( $output )
+			{
+				if ( $output.Contains("sum 6") )
+				{
 					Write-Output "pass"
 				}
-				else {
+				else
+				{
 					Write-Error $output
 				}
 			}
 			$process.WaitForExit()
 		}
+	}
+
+	# Ach to GUI...
+	{
+		Clear-Host
+		$Pat = 'bfj426gnboivwwgblyhvis3dvzzamq67euoxioi4agasjl4h2cwa'
+		$cred = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(":$PAT"))
+		$Organization = 'Microsoft'
+		$ProjectName = 'Něco%20Na%20Smazani'
+
+		$GetUri = "https://feeds.dev.azure.com/$Organization/$ProjectName/_apis/packaging/feeds?api-version=6.0-preview.1"
+		$GetFeeds = "https://feeds.dev.azure.com/$Organization/$ProjectName/_apis/packaging/feeds?api-version=6.0-preview.1"
+		$DelUri = "https://feeds.dev.azure.com/$Organization/$ProjectName/_apis/packaging/feedrecyclebin/7d280a9f-1232-492d-ac7b-de7db7642f77?api-version=6.0-preview.1"
+		$GetUsersUri = "https://vssps.dev.azure.com/$Organization/_apis/graph/users?api-version=6.0-preview.1"
+
+		$json = Invoke-RestMethod -ContentType "application/json" -Method 'Get' -Uri $GetUsersUri -Headers @{Authorization = "Basic $cred" }
+		Write-Host 'Completed'
+		$json.value | Out-File -FilePath C:\Temp\Test.txt
+		#Invoke-RestMethod -ContentType "application/json" -Method 'Delete' -Uri $DelUri -Headers @{Authorization = "Basic $cred"}
 	}
 }
 ####################################################
@@ -715,6 +786,8 @@ Register-PackageSource -Location https://www.nuget.org/api/v2 -name nuget.org -T
 - PS má totiž jednu velkou výhodu: výkonný = zdrojový kód. Mohu se rovnou podívat, co se děje uvnitř.
 - Primárně nahrazení konzolovky, kde každá změna => rekompilace.
 - Není potřeba/možnost pro speciální IDE pro debuging.
+- Potřebuji zaregistrovat službu v systému.
+- Potřebuji něco fixnout v Azure/Azure DevOps, protože GUI má chybu, např. odebrání private feedu, práva uživatelů
 - PS skript zvládne hravě schopnosti konzolových aplikací. Dokud neexistoval DragonFruit, byl to i lepší způsob díky lepší validaci parametrů. (https://www.hanselman.com/blog/DragonFruitAndSystemCommandLineIsANewWayToThinkAboutNETConsoleApps.aspx)
 #>
 ####################################################
