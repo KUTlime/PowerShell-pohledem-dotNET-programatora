@@ -421,9 +421,9 @@ if ($test)
 # Konstrukce funkcí
 {
 	# Povinný formát Verb-Noun
-	Start-Process -FilePath "https://docs.microsoft.com/en-us/powershell/developer/cmdlet/approved-verbs-for-windows-powershell-commands"
+	Start-Process -FilePath "https://docs.microsoft.com/en-us/powershell/scripting/developer/cmdlet/approved-verbs-for-windows-powershell-commands?view=powershell-7"
 
-	# Sekci parametrů i samotné parametry můžeme rozsáhle dekorovat atributy, viz příklady.
+	# Sekci parametrů i samotné parametry můžeme rozsáhle dekorovat atributy, viz příklady na konci tohoto skriptu.
 	function Verb-Noun
  {
 		[CmdletBinding()]
