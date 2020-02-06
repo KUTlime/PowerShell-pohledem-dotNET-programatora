@@ -23,7 +23,7 @@ Start-Process -FilePath 'www.radekzahradnik.cz/bio'
 - Kompletní automatizace domácí agendy: Podzim 2015
 - Automatizace pracovní agendy: Jaro 2016
 - První školení: Červen 2017
-- Říjen 2019: 1x školení s 1xx lidmi, základní a pokročilé.
+- Leden 2020: 1x školení s 1xx lidmi, základní a pokročilé.
 - Asi nejlepší základní školení v ČR (minimálně pro .NET programátory)
 #>
 
@@ -301,6 +301,17 @@ PS Provider zprostředkovává určitou doménu.
 
 
 ####################################################
+# Gong pro 2. polovinu
+####################################################
+for ($x = 1000; $x -lt 15000; $x += 300)
+{
+  "Frequency $x Hz"
+  [Console]::Beep($x, 500)
+}
+####################################################
+
+
+####################################################
 # Co může překvapit .NET programátora?
 ####################################################
 <# Dvojité vs. jednoduché uvozovky
@@ -351,9 +362,14 @@ Dvojité uvozovky "SomeString with $someVariableName" je interpolovaný string.
 		choco upgrade $software -y
 	}
 
+	foreach ($process in Get-Process) {
+
+	}
+	Get-Process | ForEach-Object {<#...#>}
+
 	# Stejně hezké a čistý PS.
 	@('firefox', 'MPC-HC', 'VLC', 'Dropbox') |
-	ForEach-Object { choco upgrade $software -y }
+	ForEach-Object { choco upgrade $_ -y }
 
 	# Jediné, kde smyčky dávají smysl, je práce s členskými proměnnými.
 	foreach ($process in Get-Process)
@@ -465,6 +481,9 @@ if ($test)
 	# https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_classes?view=powershell-6#importing-classes-from-a-powershell-module
 	# https://stackoverflow.com/questions/31051103/how-to-export-a-class-in-powershell-v5-module
 
+	# Novou instanci Foo vyrobíme takto:
+	$fooBarInstance = [FooBar]::new("fb",10)
+
 	# Chcete vlastní gettery a settery? No nebude se vám to asi líbit...
 	class FooBar
  {
@@ -505,11 +524,34 @@ if ($test)
 {
 	$list = New-Object 'System.Collections.Generic.List`1[Int32]' # Není úplně typově bezpečné.
 	$list = New-Object -TypeName ([System.Collections.Generic.List`1[Int32]]) # Všimněte si triku se (), typově bezpečnější.
-	# `1 znamená jeden typ, stejné jako List<Int32>, `2 => List<Int32,Int32>, v PS takto:
+	# `1 znamená jeden typ na vstupu, stejné jako List<Int32>.
 
 	# Obecně lze často vidět [typo]vě nebepečné použití stringu u definice názvu typu, oboru názvů nebo hodnoty enumu.
 	Get-ChildItem -Path C:\Temp -ErrorAction 'SilentlyContinue' 	# Takto to napíše jenom hovado.
-	Get-ChildItem -Path C:\Temp -ErrorAction:SilentlyContinue 		# Mnohem lepší a rychlejší.
+	Get-ChildItem -Path C:\Temp -ErrorAction SilentlyContinue # Mnohem lepší a rychlejší.
+	Get-ChildItem -Path C:\Temp -ErrorAction:SilentlyContinue # Mnohem lepší a rychlejší.
+}
+
+# Sémantika návratových hodnot je v PS taková divná...
+{
+	Start-Proces -FilePath "https://stackoverflow.com/a/10288256/4553982"
+
+	$a = "Hello, WUG!"
+	return $a
+
+	# Když už a existuje, můžeme také takto
+	$a
+	return
+
+	# nebo jenom
+	$a
+	# jako poslední řádek cmdletu nebo skriptu.
+
+	# Pak nesmíme zapomenout na možnost:
+	Write-Output -InputObject $a
+
+	# Všechny tyto způsoby jsou ekvivalentní, redundatní.
+	# Za sebe doporučuji první a poslední možnost.
 }
 
 # Rozdělení stringů (PS vs. .NET)
@@ -539,13 +581,15 @@ if ($test)
 # Operátory
 {
 	# Přiřazení
-	$foo = "foo"
 	!($true) 	# Tady veškerá podobnost syntaxe končí.
+	$foo = "foo"
+	if(!$foo){$true} <#Ekvivalent $foo != null#>
 
 	1 -eq 2 	# equal
 	1 -gt 2  	# greater than
 	1 -ge 2  	# greater equal
 	-not 1		# negace alá PS
+	-not $foo
 
 
 	# V PS jsou smotány všechny operátory dohromady, do textové podoby: pomlčka (technicky vzato je to spojovník) + textová podoba toho, co chci.
@@ -587,7 +631,7 @@ if ($test)
 	$form.ShowDialog()
 }
 
-# Další příklad
+# Další příklad GUI
 {
 	# Přípojení potřebných knihoven na vytvoření objektů
 	Add-Type -AssemblyName System.Windows.Forms
@@ -794,7 +838,7 @@ Register-PackageSource -Location https://www.nuget.org/api/v2 -name nuget.org -T
 
 
 ####################################################
-# PowerShell nepoužít jako .NET programátor?
+# Kdy PowerShell nepoužít jako .NET programátor?
 ####################################################
 <#
 - Složitější GUI
@@ -822,7 +866,7 @@ Start-Process -FilePath 'https://github.com/KUTlime/PowerShell-Subtitle-Module/b
 ####################################################
 # Příklad č.3: Hlídací pes
 ####################################################
-Start-Process -FilePath 'https://github.com/KUTlime/PowerShell-pohledem-dotNET-programatora/blob/master/Examples/MR%20RESX%20files%20check.ps1'
+Start-Process -FilePath 'https://github.com/KUTlime/PowerShell-pohledem-dotNET-programatora/blob/master/Examples/WebCronScheduled.ps1'
 ####################################################
 
 <# Nějaké snippety do VS Code, co se můžou hodit...
@@ -870,33 +914,4 @@ Start-Process -FilePath 'https://github.com/KUTlime/PowerShell-pohledem-dotNET-p
 		"description": "A code block for nice and easy scripting."
 	  }
 
-#>
-
-<# Mé nastavení VS Code, může se taky někomu hodit.
-
-{
-    "[powershell]": {
-        "editor.renderWhitespace": "all",
-        "editor.renderControlCharacters": true,
-        "files.trimTrailingWhitespace": true,
-        "files.encoding": "utf8bom",
-        "files.autoGuessEncoding": true
-    },
-    "powershell.powerShellAdditionalExePaths": [
-        {
-            "exePath": "c:\\Program \\PowerShell\\7-preview\\pwsh.exe",
-            "versionName": "PowerShell Core"
-        }
-    ],
-    "terminal.integrated.shell.windows": "C:\\Program Files\\PowerShell\\7-preview\\pwsh.exe",
-    "powershell.powerShellExePath": "C:\\Program Files\\PowerShell\\7-preview\\pwsh.exe",
-    "sync.autoUpload": true,
-    "editor.renderWhitespace": "boundary",
-    "sync.autoDownload": true,
-    "git.enableSmartCommit": true,
-    "git.autofetch": true,
-    "git.confirmSync": false,
-    "powershell.codeFormatting.openBraceOnSameLine": false,
-    "powershell.codeFormatting.ignoreOneLineBlock": false,
-}
 #>
