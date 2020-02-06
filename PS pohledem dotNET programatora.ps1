@@ -871,3 +871,32 @@ Start-Process -FilePath 'https://github.com/KUTlime/PowerShell-pohledem-dotNET-p
 	  }
 
 #>
+
+<# Mé nastavení VS Code, může se taky někomu hodit.
+
+{
+    "[powershell]": {
+        "editor.renderWhitespace": "all",
+        "editor.renderControlCharacters": true,
+        "files.trimTrailingWhitespace": true,
+        "files.encoding": "utf8bom",
+        "files.autoGuessEncoding": true
+    },
+    "powershell.powerShellAdditionalExePaths": [
+        {
+            "exePath": "c:\\Program \\PowerShell\\7-preview\\pwsh.exe",
+            "versionName": "PowerShell Core"
+        }
+    ],
+    "terminal.integrated.shell.windows": "C:\\Program Files\\PowerShell\\7-preview\\pwsh.exe",
+    "powershell.powerShellExePath": "C:\\Program Files\\PowerShell\\7-preview\\pwsh.exe",
+    "sync.autoUpload": true,
+    "editor.renderWhitespace": "boundary",
+    "sync.autoDownload": true,
+    "git.enableSmartCommit": true,
+    "git.autofetch": true,
+    "git.confirmSync": false,
+    "powershell.codeFormatting.openBraceOnSameLine": false,
+    "powershell.codeFormatting.ignoreOneLineBlock": false,
+}
+#>
